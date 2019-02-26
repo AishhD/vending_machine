@@ -5,7 +5,7 @@ class Cli
         @users_coins = UsersMoney.new(users_coins)
         @tills_coins = TillsMoney.new(tills_coins)
         @products = Products.new(products)
-        @display_options = DisplayOptions.new()
+        @handle_options = HandleOptions.new(@products)
     end
 
     def run
@@ -13,7 +13,8 @@ class Cli
         puts @products.list_products
         separate
         @users_coins.list_coins
-        @display_options.initial_options
+        @handle_options.display_initial_options
+        @handle_options.handle_initial_options
     end
 
     def greet
