@@ -2,5 +2,10 @@ source "https://rubygems.org"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
-# Specify your gem's dependencies in vending_machine.gemspec
-gemspec
+
+group :development do
+    gem 'pry'
+    gem 'artii'
+    gem "require_all"
+    gem 'rainbow'
+  end
