@@ -11,6 +11,6 @@ class Products
 
     def list_products
         puts "Our products are:"
-        @products.map { |product, price| "#{product}, #{price}" }
+        @products.map { |product, price| "#{product}, #{price.keys[0]}" }
     end
 end

@@ -5,14 +5,14 @@ class UsersMoney
         @users_coins = users_coins
     end
 
-    def users_coins
-        @users_coins
-    end
-
     def list_coins
         puts "You have:"
-        @users_coins.each { |coin| print "#{coin}, " }
+        puts @users_coins.join(" ")
         print "\n"
-        print "\n"
+    end
+
+    def remove_users_paid_coins(input)
+        input.each { |coin| users_coins.delete(coin)}
+        users_coins
     end
 end
