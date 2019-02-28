@@ -1,6 +1,6 @@
 class Cli
 
-    attr_accessor :users_coins, :vending_machine
+    attr_accessor :users_coins, :vending_machine, :input_value
     # needed just for testing 
     attr_reader :total, :initial_arguments
 
@@ -16,7 +16,7 @@ class Cli
     def run
         greet
         until @vending_machine.products.length === 0
-            run_vending_machine
+            run_program
         end
         puts "No more products, goodbye"
     end
@@ -33,7 +33,7 @@ class Cli
         abort("Goodbye")
     end
 
-    def run_vending_machine
+    def run_program
         puts @vending_machine.list_products
         separate
         list_coins
@@ -158,7 +158,7 @@ class Cli
                 @vending_machine.remove_vending_machine_coin(coin)
             end                         
         end
-        value_to_coin(return_coin_type)
+        return_prodct_and_change(return_coin_type)
     end
 
     def modify_users_coins(coin)
@@ -166,7 +166,7 @@ class Cli
         @users_coins.sort_by! {|coin| coin.value}.reverse!
     end
 
-    def value_to_coin(return_coins)
+    def return_prodct_and_change(return_coins)
         puts "Please take your #{@selected_product.name} and your change: #{return_coins.join(' ')}"
     end
 
