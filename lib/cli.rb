@@ -37,7 +37,7 @@ class Cli
         puts @vending_machine.list_products
         separate
         list_coins
-        main_menu_options
+        @vending_machine.main_menu_options
         handle_main_menu_options
     end
 
@@ -45,14 +45,6 @@ class Cli
         puts "You have:"
         puts @users_coins.map {|coin| coin.type}.join(" ")
         separate
-    end
-
-    def main_menu_options
-        puts "What would you like to do?"
-        options = { '1' => 'Choose a snack', '2' => 'Reset your balance', '3' => 'Reset vending machine', 'X' => 'Exit' }
-        options.each do |indicator, option|
-        puts "(#{indicator}) #{option}"
-        end
     end
 
     def handle_main_menu_options(input=nil)
@@ -98,12 +90,8 @@ class Cli
 
     def buy
         list_coins
-        list_selected_product
+        @vending_machine.list_selected_product
         user_payments
-    end
-
-    def list_selected_product
-        puts "For #{@vending_machine.selected_product.name} please pay #{@vending_machine.selected_product.price[0]} in coins"
     end
 
     def user_payments
@@ -120,24 +108,28 @@ class Cli
             puts "-----------------------------"
             buy
         else
-            @input_value = @input.map { |coin| @users_coins.find {|user_coin| user_coin.type == coin}.value }
+            set_input_value
             puts check_paid_amount
         end
     end
 
+    def set_input_value
+        @input_value = @input.map { |coin| @users_coins.find {|user_coin| user_coin.type == coin}.value }
+    end
+    
     def check_paid_amount
         set_total
         @price = @vending_machine.selected_product.value[0]
         remainder = @price - @total
         if remainder > 0
             remove_user_coin
-            puts "You have paid #{@total}p, please pay the remaining #{remainder}p"
+            request_more_money(remainder)
             puts list_coins
             user_payments
         elsif remainder == 0
             remove_user_coin
             @vending_machine.remove_product(@vending_machine.selected_product)
-            puts "Please take your #{@vending_machine.selected_product.name}"
+            give_product
         elsif remainder < 0
             remove_user_coin
             @vending_machine.remove_product(@vending_machine.selected_product)
@@ -145,6 +137,14 @@ class Cli
         else
             puts "Invalid amount entered"
         end
+    end
+
+    def request_more_money(remainder)
+        puts "You have paid #{@total}p, please pay the remaining #{remainder}p"
+    end
+
+    def give_product
+        puts "Please take your #{@vending_machine.selected_product.name}"
     end
 
     def set_total

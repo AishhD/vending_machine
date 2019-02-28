@@ -17,12 +17,24 @@ class VendingMachine
         @products.map { |product, price| "#{product.name}, #{product.price[0]}" }
     end
 
+    def list_selected_product
+        puts "For #{@selected_product.name} please pay #{@selected_product.price[0]} in coins"
+    end
+
     def remove_product(selected_product)
         @products = @products - @products.select{|product| product == selected_product}
     end
 
     def remove_vending_machine_coin(remove_coin)
         @vending_machine_coins = @vending_machine_coins - @vending_machine_coins.select{|coin| coin == remove_coin}
+    end
+
+    def main_menu_options
+        puts "What would you like to do?"
+        options = { '1' => 'Choose a snack', '2' => 'Reset your balance', '3' => 'Reset vending machine', 'X' => 'Exit' }
+        options.each do |indicator, option|
+        puts "(#{indicator}) #{option}"
+        end
     end
 
 end
