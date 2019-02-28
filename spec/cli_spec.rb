@@ -51,9 +51,4 @@ describe Cli do
         expect(@cli.set_total).to eq 6
     end
 
-    # it 'resets users_coins', :handle_main_menu_options_2 do
-    #     @cli.users_coins = @cli.users_coins - @cli.users_coins.select{|users_coin| users_coin.type == "£1"}
-    #     expect(@cli.users_coins.map { |coin| coin.type}).to eq ["£2", "£1", "50p", "20p", "10p", "5p", "2p", "1p"]
-    # end
-
 end
