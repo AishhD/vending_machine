@@ -5,7 +5,5 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
 group :development do
     gem 'pry'
-    gem 'artii'
     gem "require_all"
-    gem 'rainbow'
   end
