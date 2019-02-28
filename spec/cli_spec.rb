@@ -33,11 +33,6 @@ describe Cli do
         expect{@cli.greet}.to output("Welcome to the vending machine\n").to_stdout
     end
 
-    # it 'outputs a goodbye' do
-    #     expect{@cli.exit}.to output("Goodbyen\n").to_stdout
-    # end
-
-
     it 'list to out all the coins followed by a separator' do
         expect{@cli.list_coins}.to output("You have:\n£2 £1 50p 20p 10p 5p 2p 1p\n------------------------------------\n").to_stdout
     end
