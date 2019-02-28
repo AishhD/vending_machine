@@ -13,6 +13,12 @@
 
 ## Getting Started
 
+To start, in your terminal type
+
+```
+bundle install
+```
+
 To run the program type
 
 ```
