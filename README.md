@@ -13,7 +13,7 @@
 
 ## Getting Started
 
-To start, in your terminal type
+To start in your terminal type
 
 ```
 bundle install
