@@ -13,7 +13,7 @@
 
 ## Getting Started
 
-To start type
+To start run
 
 ```
 bundle install
