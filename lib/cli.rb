@@ -65,21 +65,29 @@ class Cli
             puts"Type the name of the product you wish to buy"
             user_selects_product
           when "2"
-            #call new instances of Coin class with original input
-            @users_coins = @initial_arguments[0].map { |coin| Coin.new(coin)}.sort_by {|coin| coin.value}.reverse
+            reset_users_coins
           when "3"
-            #call new instances of VendingMachine class with original input
-            @vending_machine = VendingMachine.new(@initial_arguments[1], @initial_arguments[2])
+            reset_vending_machine
           when "X"
             exit
         end
+    end
+
+    def reset_users_coins
+        #call new instances of Coin class with original input
+        @users_coins = @initial_arguments[0].map { |coin| Coin.new(coin)}.sort_by {|coin| coin.value}.reverse
+    end
+
+    def reset_vending_machine
+        #call new instances of VendingMachine class with original input
+        @vending_machine = VendingMachine.new(@initial_arguments[1], @initial_arguments[2])
     end
 
     def user_selects_product
         input = gets.chomp.capitalize
         if @vending_machine.products.any? { |product| product.name == input}
             #select the product that matches the input and return the product not in an array
-            @selected_product = @vending_machine.products.select { |product| product.name == input }.first
+            @vending_machine.vend_product(input)
             buy
         else
             puts "Invalid input"
@@ -90,8 +98,12 @@ class Cli
 
     def buy
         list_coins
-        puts "For #{@selected_product.name} please pay #{@selected_product.price[0]} in coins"
+        list_selected_product
         user_payments
+    end
+
+    def list_selected_product
+        puts "For #{@vending_machine.selected_product.name} please pay #{@vending_machine.selected_product.price[0]} in coins"
     end
 
     def user_payments
@@ -115,7 +127,7 @@ class Cli
 
     def check_paid_amount
         set_total
-        @price = @selected_product.value[0]
+        @price = @vending_machine.selected_product.value[0]
         remainder = @price - @total
         if remainder > 0
             remove_user_coin
@@ -124,11 +136,11 @@ class Cli
             user_payments
         elsif remainder == 0
             remove_user_coin
-            @vending_machine.remove_product(@selected_product)
-            puts "Please take your #{@selected_product.name}"
+            @vending_machine.remove_product(@vending_machine.selected_product)
+            puts "Please take your #{@vending_machine.selected_product.name}"
         elsif remainder < 0
             remove_user_coin
-            @vending_machine.remove_product(@selected_product)
+            @vending_machine.remove_product(@vending_machine.selected_product)
             give_change
         else
             puts "Invalid amount entered"
@@ -167,7 +179,7 @@ class Cli
     end
 
     def return_prodct_and_change(return_coins)
-        puts "Please take your #{@selected_product.name} and your change: #{return_coins.join(' ')}"
+        puts "Please take your #{@vending_machine.selected_product.name} and your change: #{return_coins.join(' ')}"
     end
 
 end

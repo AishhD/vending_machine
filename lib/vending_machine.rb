@@ -1,11 +1,15 @@
 class VendingMachine
 
-    attr_accessor :products, :vending_machine_coins
+    attr_accessor :products, :vending_machine_coins, :selected_product
 
     def initialize(products, vending_machine_coins)
         @products = products.map { |product| Product.new(product)}
          #an array of coin class instances organised from highest to lowest value
         @vending_machine_coins = vending_machine_coins.map { |coin| Coin.new(coin)}.sort_by {|coin| coin.value}.reverse
+    end
+
+    def vend_product(input)
+        @selected_product = @products.find { |product| product.name == input }
     end
 
     def list_products
