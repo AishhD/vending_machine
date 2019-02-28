@@ -59,7 +59,7 @@ rspec
 
 ## Built With
 
-- [Ruby] - A dynamic, interpreted, reflective, object-oriented, general-purpose programming language.
+- Ruby - A dynamic, interpreted, reflective, object-oriented, general-purpose programming language.
 
 ## Gems
 
