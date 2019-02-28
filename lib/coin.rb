@@ -20,13 +20,4 @@ class Coin
         }
     end
 
-    # def validate_value
-    #     if Coin.available_coins.keys.include? @coin
-    #         @value = Coin.available_coins[@coin]
-    #     elsif Coin.available_coins.values.include? @value
-    #         @value = Coin.available_coins.keys[@value]
-    #     else 
-    #         nil
-    #     end
-    # end
 end

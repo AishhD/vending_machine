@@ -1,10 +1,10 @@
 require_relative '../lib/vending_machine'
 
-describe VendingMachine do 
+describe VendingMachine do
 
     set_vending_machine_coins = ["1p", "2p", "5p", "10p", "20p", "50p", "£1", "£2", "1p", "2p", "5p", "10p", "20p", "50p", "£1", "£2", "1p", "2p", "5p", "10p", "20p", "50p", "£1", "£2"]
     set_products = {"Kettle crips" => {"£1" => 100}, "Walkers crips" => {"50p" => 50}, "Popchips" => {"65p" => 65}, "Sensations" => {"£1.50" => 150}, "Quavers" => {"80p" => 80}}
-    
+
     let(:vending_machine) {VendingMachine.new(set_products, set_vending_machine_coins)}
 
     it 'initializes the vending machine with the correct products, price and value' do
@@ -45,7 +45,7 @@ describe VendingMachine do
     it 'returns a list of the products and their price"' do
         expect(vending_machine.list_products).to eq ["Kettle crips, £1", "Walkers crips, 50p", "Popchips, 65p", "Sensations, £1.50", "Quavers, 80p"]
     end
-    
+
     it 'removes a product' do
         expect(vending_machine.remove_product(vending_machine.products.first).map{|product| product.name}).to eq ["Walkers crips", "Popchips", "Sensations", "Quavers"]
     end

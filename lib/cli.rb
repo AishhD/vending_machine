@@ -1,7 +1,7 @@
 class Cli
 
     attr_accessor :users_coins, :vending_machine, :input_value
-    # needed just for testing 
+    # needed just for testing
     attr_reader :total, :initial_arguments
 
     def initialize(users_coins, products, vending_machine_coins)
@@ -28,8 +28,8 @@ class Cli
     def separate
         puts "------------------------------------"
     end
-  
-    def exit 
+
+    def exit
         abort("Goodbye")
     end
 
@@ -59,7 +59,7 @@ class Cli
         if (!input)
           input = gets.chomp.capitalize
         end
-        case input 
+        case input
           when "1"
             puts @vending_machine.list_products
             puts"Type the name of the product you wish to buy"
@@ -92,7 +92,7 @@ class Cli
         list_coins
         puts "For #{@selected_product.name} please pay #{@selected_product.price[0]} in coins"
         user_payments
-    end 
+    end
 
     def user_payments
         @input = gets.chomp
@@ -130,7 +130,7 @@ class Cli
             remove_user_coin
             @vending_machine.remove_product(@selected_product)
             give_change
-        else 
+        else
             puts "Invalid amount entered"
         end
     end
@@ -156,7 +156,7 @@ class Cli
                 modify_users_coins(coin)
                 remainder = initial_remaining_amount - return_coin_value.inject(:+)
                 @vending_machine.remove_vending_machine_coin(coin)
-            end                         
+            end
         end
         return_prodct_and_change(return_coin_type)
     end
