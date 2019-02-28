@@ -1,8 +1,7 @@
 class Cli
 
-    attr_accessor :users_coins, :vending_machine, :input_value
     # needed just for testing
-    attr_reader :total, :initial_arguments
+    attr_reader :initial_arguments
 
     def initialize(users_coins, products, vending_machine_coins)
         #saved initial input to reset values
@@ -10,22 +9,26 @@ class Cli
         #an array of coin class instances organised from highest to lowest value
         @users_coins = users_coins.map { |coin| Coin.new(coin)}.sort_by {|coin| coin.value}.reverse
         @vending_machine = VendingMachine.new(products, vending_machine_coins)
-        @total = 0
     end
 
     def run
         greet
-        until @vending_machine.products.length === 0
-            run_program
+        #run until no products are in the vending machine
+        until vending_machine_empty?
+            serve_customer
         end
         puts "No more products, goodbye"
+    end
+
+    def vending_machine_empty?
+        @vending_machine.products.length == 0
     end
 
     def greet
         puts "Welcome to the vending machine"
     end
 
-    def separate
+    def display_divider
         puts "------------------------------------"
     end
 
@@ -33,28 +36,29 @@ class Cli
         abort("Goodbye")
     end
 
-    def run_program
-        puts @vending_machine.list_products
-        separate
-        list_coins
-        @vending_machine.main_menu_options
-        handle_main_menu_options
+    def serve_customer
+        @vending_machine.list_available_products
+        display_divider
+        list_user_coins
+        @vending_machine.display_main_menu_options
+        handle_menu_choice
     end
 
-    def list_coins
+    def list_user_coins
+        users_available_coins = @users_coins.map {|coin| coin.type}.join(" ")
         puts "You have:"
-        puts @users_coins.map {|coin| coin.type}.join(" ")
-        separate
+        puts users_available_coins
+        display_divider
     end
 
-    def handle_main_menu_options(input=nil)
-        if (!input)
+    def handle_menu_choice(input=nil)
+        #While the method is called with no input get the input from the user.
+        while (!input)
           input = gets.chomp.capitalize
         end
         case input
           when "1"
-            puts @vending_machine.list_products
-            puts"Type the name of the product you wish to buy"
+            @vending_machine.list_available_products
             user_selects_product
           when "2"
             reset_users_coins
@@ -75,26 +79,33 @@ class Cli
         @vending_machine = VendingMachine.new(@initial_arguments[1], @initial_arguments[2])
     end
 
+    def invalid_input
+        puts "Invalid input"
+        display_divider
+    end
+
     def user_selects_product
+        puts "Type the name of the product you wish to buy"
         input = gets.chomp.capitalize
-        if @vending_machine.products.any? { |product| product.name == input}
+        product = @vending_machine.products.find { |product| product.name == input}
+        if product
             #select the product that matches the input and return the product not in an array
-            @vending_machine.vend_product(input)
-            buy
+            @vending_machine.selected_product = product
+            @vending_machine.set_initial_remainder_to_pay
+            start_buy_phase
         else
-            puts "Invalid input"
-            puts "-----------------------------"
-            handle_main_menu_options("1")
+            invalid_input
+            handle_menu_choice("1")
         end
     end
 
-    def buy
-        list_coins
-        @vending_machine.list_selected_product
-        user_payments
+    def start_buy_phase
+        list_user_coins
+        @vending_machine.show_product_price
+        handle_payment
     end
 
-    def user_payments
+    def handle_payment
         @input = gets.chomp
         @input.tr!(',', '')
         @input = @input.split(" ")
@@ -103,83 +114,56 @@ class Cli
 
     def validate_input
         available_coins = @users_coins.map{|coin| coin.type}
-        if (!@input.all? { |coin| available_coins.include? (coin)})
+        check_if_user_has_coin = @input.find { |coin| available_coins.include? (coin) }
+        #if the user doesn't have the coin
+        if (!check_if_user_has_coin)
             puts "Invalid input"
             puts "-----------------------------"
-            buy
+            #rerun buy phase
+            start_buy_phase
         else
-            set_input_value
-            puts check_paid_amount
+            set_paid_amount
+            remove_users_paid_coins
+            check_user_paid_enough
         end
     end
 
-    def set_input_value
-        @input_value = @input.map { |coin| @users_coins.find {|user_coin| user_coin.type == coin}.value }
+    def set_paid_amount
+        #map each coin given, find that coin in the users coins and return its value
+        values_of_users_payment = @input.map { |coin| @users_coins.find {|user_coin| user_coin.type == coin}.value }
+        @vending_machine.paid_value = values_of_users_payment
     end
     
-    def check_paid_amount
-        set_total
-        @price = @vending_machine.selected_product.value[0]
-        remainder = @price - @total
-        if remainder > 0
-            remove_user_coin
-            request_more_money(remainder)
-            puts list_coins
-            user_payments
-        elsif remainder == 0
-            remove_user_coin
+    def check_user_paid_enough
+        @vending_machine.set_remainder_to_pay
+        if @vending_machine.remainder_to_pay > 0
+            @vending_machine.request_more_money
+            list_user_coins
+            handle_payment
+        elsif @vending_machine.remainder_to_pay == 0
             @vending_machine.remove_product(@vending_machine.selected_product)
-            give_product
-        elsif remainder < 0
-            remove_user_coin
-            @vending_machine.remove_product(@vending_machine.selected_product)
-            give_change
+            @vending_machine.give_product
+            @vending_machine.reset_total_amount_paid
+        elsif @vending_machine.remainder_to_pay < 0
+            @vending_machine.remove_product
+            @vending_machine.give_change
+            modify_users_coins
+            @vending_machine.return_product_and_change
+            @vending_machine.reset_total_amount_paid
         else
             puts "Invalid amount entered"
         end
     end
 
-    def request_more_money(remainder)
-        puts "You have paid #{@total}p, please pay the remaining #{remainder}p"
-    end
-
-    def give_product
-        puts "Please take your #{@vending_machine.selected_product.name}"
-    end
-
-    def set_total
-        @total = @input_value.reduce(@total) { |sum, num| sum + num}
-    end
-
-    def remove_user_coin
+    def remove_users_paid_coins
         @input.each {|coin| @users_coins = @users_coins - @users_coins.select{|users_coin| users_coin.type == coin} }
     end
 
-    def give_change
-        return_coin_value = []
-        return_coin_type = []
-        initial_remaining_amount = @total - @price
-        remainder = @total - @price
-        # counts down finds biggest coins first
-        @vending_machine.vending_machine_coins.each do |coin|
-            if ((remainder/coin.value).to_int > 0)
-                return_coin_value << coin.value
-                return_coin_type << coin.type
-                modify_users_coins(coin)
-                remainder = initial_remaining_amount - return_coin_value.inject(:+)
-                @vending_machine.remove_vending_machine_coin(coin)
-            end
+    def modify_users_coins
+        @vending_machine.coins_to_return.each do |coin|
+            @users_coins << coin
+            @users_coins.sort_by! {|coin| coin.value}.reverse!
         end
-        return_prodct_and_change(return_coin_type)
-    end
-
-    def modify_users_coins(coin)
-        @users_coins << coin
-        @users_coins.sort_by! {|coin| coin.value}.reverse!
-    end
-
-    def return_prodct_and_change(return_coins)
-        puts "Please take your #{@vending_machine.selected_product.name} and your change: #{return_coins.join(' ')}"
     end
 
 end

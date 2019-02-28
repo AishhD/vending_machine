@@ -1,40 +1,123 @@
 class VendingMachine
 
-    attr_accessor :products, :vending_machine_coins, :selected_product
+    attr_accessor :products, :vending_machine_coins, :selected_product, :paid_value, :remainder_to_pay, :coins_to_return
 
     def initialize(products, vending_machine_coins)
         @products = products.map { |product| Product.new(product)}
          #an array of coin class instances organised from highest to lowest value
         @vending_machine_coins = vending_machine_coins.map { |coin| Coin.new(coin)}.sort_by {|coin| coin.value}.reverse
+        @paid_value = 0
+        @total_amount_paid = 0
+        @selected_product = nil
     end
 
-    def vend_product(input)
-        @selected_product = @products.find { |product| product.name == input }
+    def list_available_products
+        products_list = @products.map { |product, price| "#{product.name}, #{product.price[0]}" }.join("\n")
+        puts "Our products are: \n#{products_list}"
+        
     end
 
-    def list_products
-        puts "Our products are:"
-        @products.map { |product, price| "#{product.name}, #{product.price[0]}" }
+    def show_product_price
+        puts "For #{@selected_product.name} please pay #{@remainder_to_pay} in coins"
     end
 
-    def list_selected_product
-        puts "For #{@selected_product.name} please pay #{@selected_product.price[0]} in coins"
+    def remove_product
+        # find the instance of the selected product in @products
+        products_instance_of_selected_product = @products.select{|product| product == @selected_product}
+        # remove the instance of the selected product from @products 
+        @products = @products - products_instance_of_selected_product
     end
 
-    def remove_product(selected_product)
-        @products = @products - @products.select{|product| product == selected_product}
+    def main_menu_options
+        { '1' => 'Choose a snack', '2' => 'Reset your balance', '3' => 'Reset vending machine', 'X' => 'Exit' }
+    end
+
+    def display_main_menu_options
+        puts "What would you like to do?"
+        main_menu_options.each do |indicator, option|
+        puts "(#{indicator}) #{option}"
+        end
+    end
+
+    def set_selected_product_price 
+        @selected_product_price = @selected_product.value[0]
+    end
+
+    def set_total_paid
+        @total_amount_paid = @paid_value.reduce(@total_amount_paid) { |sum, num| sum + num}
+    end
+
+    def reset_total_amount_paid
+        @total_amount_paid = 0
+    end
+
+    def set_initial_remainder_to_pay
+        @remainder_to_pay = @selected_product.price[0]
+    end
+
+    def set_remainder_to_pay
+        set_selected_product_price 
+        set_total_paid
+        #remainder_to_pay is the product price minus the total amount paid
+        @remainder_to_pay = @selected_product_price - @total_amount_paid
+    end
+
+    def check_paid_amount
+        @vending_machine.set_total_paid
+        @vending_machine.set_selected_product_price 
+        @vending_machine.set_remainder_to_pay
+        if @vending_machine.remainder_to_pay > 0
+            @vending_machine.request_more_money
+            puts list_coins
+            user_payments
+        elsif @vending_machine.remainder_to_pay == 0
+            @vending_machine.remove_product(@vending_machine.selected_product)
+            @vending_machine.give_product
+        elsif @vending_machine.remainder_to_pay < 0
+            @vending_machine.remove_product(@vending_machine.selected_product)
+            @vending_machine.give_change
+            modify_users_coins(coin)
+            @vending_machine.return_product_and_change
+        else
+            puts "Invalid amount entered"
+        end
+    end
+
+    def request_more_money
+        puts "You have paid #{@total_amount_paid}p, please pay the remaining #{@remainder_to_pay}p"
+    end
+
+    def give_product
+        puts "Please take your #{@vending_machine.selected_product.name}"
+    end
+
+    def give_change
+        coin_values = []
+        initial_change_amount_needed = @total_amount_paid - @selected_product_price
+        @coins_to_return = []
+        change_amount_needed = initial_change_amount_needed
+        #Go through each coin in the vending machine
+        vending_machine_coins.each do |coin|
+            # if the change needed minus the coin is greater than 0 
+            if ((change_amount_needed - coin.value).to_int > 0)
+                coin_values << coin.value
+                @coins_to_return << coin
+                change_amount_needed = initial_change_amount_needed - coin_values.inject(:+)
+                remove_vending_machine_coin(coin)
+            end
+        end
     end
 
     def remove_vending_machine_coin(remove_coin)
         @vending_machine_coins = @vending_machine_coins - @vending_machine_coins.select{|coin| coin == remove_coin}
     end
 
-    def main_menu_options
-        puts "What would you like to do?"
-        options = { '1' => 'Choose a snack', '2' => 'Reset your balance', '3' => 'Reset vending machine', 'X' => 'Exit' }
-        options.each do |indicator, option|
-        puts "(#{indicator}) #{option}"
-        end
+    def coin_types_to_return
+        coins_to_return.map {|coin| coin.type}
+    end
+
+    def return_product_and_change
+        puts "Please take your #{@selected_product.name} and your change: #{coin_types_to_return.join(' ')}"
     end
 
 end
