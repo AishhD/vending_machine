@@ -1,6 +1,8 @@
 class VendingMachine
 
-    attr_accessor :products, :vending_machine_coins, :selected_product, :paid_value, :remainder_to_pay, :coins_to_return
+    attr_accessor :selected_product, :paid_value
+
+    attr_reader :total_amount_paid, :products, :vending_machine_coins, :remainder_to_pay, :coins_to_return, :main_menu_options
 
     def initialize(products, vending_machine_coins)
         @products = products.map { |product| Product.new(product)}

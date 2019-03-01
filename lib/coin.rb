@@ -1,6 +1,6 @@
 class Coin
 
-    attr_accessor :type, :value
+    attr_reader :type, :value
 
     def initialize(coin)
         @type = coin

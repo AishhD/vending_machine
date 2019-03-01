@@ -1,7 +1,7 @@
 class Cli
 
     # needed just for testing
-    attr_reader :initial_arguments
+    attr_reader :initial_arguments, :users_coins, :vending_machine
 
     def initialize(users_coins, products, vending_machine_coins)
         #saved initial input to reset values
