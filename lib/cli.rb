@@ -141,7 +141,7 @@ class Cli
             list_user_coins
             handle_payment
         elsif @vending_machine.remainder_to_pay == 0
-            @vending_machine.remove_product(@vending_machine.selected_product)
+            @vending_machine.remove_product
             @vending_machine.give_product
             @vending_machine.reset_total_amount_paid
         elsif @vending_machine.remainder_to_pay < 0

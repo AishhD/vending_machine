@@ -64,33 +64,12 @@ class VendingMachine
         @remainder_to_pay = @selected_product_price - @total_amount_paid
     end
 
-    def check_paid_amount
-        @vending_machine.set_total_paid
-        @vending_machine.set_selected_product_price
-        @vending_machine.set_remainder_to_pay
-        if @vending_machine.remainder_to_pay > 0
-            @vending_machine.request_more_money
-            puts list_coins
-            user_payments
-        elsif @vending_machine.remainder_to_pay == 0
-            @vending_machine.remove_product(@vending_machine.selected_product)
-            @vending_machine.give_product
-        elsif @vending_machine.remainder_to_pay < 0
-            @vending_machine.remove_product(@vending_machine.selected_product)
-            @vending_machine.give_change
-            modify_users_coins(coin)
-            @vending_machine.return_product_and_change
-        else
-            puts "Invalid amount entered"
-        end
-    end
-
     def request_more_money
         puts "You have paid #{@total_amount_paid}p, please pay the remaining #{@remainder_to_pay}p"
     end
 
     def give_product
-        puts "Please take your #{@vending_machine.selected_product.name}"
+        puts "Please take your #{selected_product.name}"
     end
 
     def give_change
