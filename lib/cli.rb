@@ -133,7 +133,7 @@ class Cli
         values_of_users_payment = @input.map { |coin| @users_coins.find {|user_coin| user_coin.type == coin}.value }
         @vending_machine.paid_value = values_of_users_payment
     end
-    
+
     def check_user_paid_enough
         @vending_machine.set_remainder_to_pay
         if @vending_machine.remainder_to_pay > 0

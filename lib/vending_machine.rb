@@ -16,7 +16,7 @@ class VendingMachine
     def list_available_products
         products_list = @products.map { |product, price| "#{product.name}, #{product.price[0]}" }.join("\n")
         puts "Our products are: \n#{products_list}"
-        
+
     end
 
     def show_product_price
@@ -26,7 +26,7 @@ class VendingMachine
     def remove_product
         # find the instance of the selected product in @products
         products_instance_of_selected_product = @products.select{|product| product == @selected_product}
-        # remove the instance of the selected product from @products 
+        # remove the instance of the selected product from @products
         @products = @products - products_instance_of_selected_product
     end
 
@@ -41,7 +41,7 @@ class VendingMachine
         end
     end
 
-    def set_selected_product_price 
+    def set_selected_product_price
         @selected_product_price = @selected_product.value[0]
     end
 
@@ -58,7 +58,7 @@ class VendingMachine
     end
 
     def set_remainder_to_pay
-        set_selected_product_price 
+        set_selected_product_price
         set_total_paid
         #remainder_to_pay is the product price minus the total amount paid
         @remainder_to_pay = @selected_product_price - @total_amount_paid
@@ -66,7 +66,7 @@ class VendingMachine
 
     def check_paid_amount
         @vending_machine.set_total_paid
-        @vending_machine.set_selected_product_price 
+        @vending_machine.set_selected_product_price
         @vending_machine.set_remainder_to_pay
         if @vending_machine.remainder_to_pay > 0
             @vending_machine.request_more_money
@@ -100,7 +100,7 @@ class VendingMachine
         change_amount_needed = initial_change_amount_needed
         #Go through each coin in the vending machine
         vending_machine_coins.each do |coin|
-            # if the change needed minus the coin is greater than 0 
+            # if the change needed minus the coin is greater than 0
             if ((change_amount_needed - coin.value).to_int > 0)
                 coin_values << coin.value
                 @coins_to_return << coin
